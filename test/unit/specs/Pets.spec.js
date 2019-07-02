@@ -6,6 +6,6 @@ describe('Pets.vue', () => {
     const Constructor = Vue.extend(Pets);
     const ListComponent = new Constructor().$mount();
     expect(ListComponent.maleArry)
-      .to.contai('Bob');
+      .to.contai('Garfield');
   });
 });

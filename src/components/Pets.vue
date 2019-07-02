@@ -1,23 +1,21 @@
 <template>
   <div class="hello">
     <p>male</p>
-    <ul>
-    <li v-for="item in maleArr" :key='item'>
-       {{ item.name }}
+    <ul >
+    <li v-for="item in maleArr" :key='item' role="columnheader" aria-sort="ascending">
+       {{ item }}
     </li>
     </ul>
     <p>female</p>
-    <ul>
-    <li v-for="item in femaleArr" :key='item'>
-       {{ item.name }}
+    <ul aria-sort="ascending" role="columnheader">
+    <li v-for="item in femaleArr" :key='item' role="columnheader" aria-sort="ascending">
+       {{ item }}
     </li>
     </ul>
   </div>
 </template>
 
 <script>
-import { debug } from 'util';
-
 export default {
   name: 'index',
   data() {
@@ -31,17 +29,36 @@ export default {
   },
   methods: {
     getPetsAndOwners() {
+      const maleArrDisorder = [];
+      const femaleArrDisorder = [];
+      const that = this;
       this.axios({
         method: 'get',
         url: process.env.PETS_URL,
-      }).then((data) => {
-        for (const value of data.data) {
-          if (value.gender === 'Male') {
-            this.maleArr.push({ name: value.name });
-          } else {
-            this.femaleArr.push({ name: value.name });
+      }).then((res) => {
+        /**
+         *  Pick up cats.
+         */
+        res.data.forEach((owner) => {
+          if (owner.pets !== null) {
+            owner.pets.forEach((pet) => {
+              if (pet.type === 'Cat') {
+                if (owner.gender === 'Male') {
+                  maleArrDisorder.push(pet.name);
+                } else {
+                  femaleArrDisorder.push(pet.name);
+                }
+              }
+            });
           }
-        }
+        });
+
+        /**
+         *  Sorted the cat name list.
+         *  And bind to show.
+         */
+        that.maleArr = maleArrDisorder.sort();
+        that.femaleArr = femaleArrDisorder.sort();
       });
     },
   },
